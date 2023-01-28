@@ -4,6 +4,15 @@ param(
 	[Parameter(Mandatory=$False)] [String] $GroupTag = ""
 )
 
+If((Test-Path X:\Windows\System32\wpeutil.exe) -and (Test-Path $PSScriptRoot\PCPKsp.dll))
+{
+Copy-Item "$PSScriptRoot\PCPKsp.dll" "X:\Windows\System32\PCPKsp.dll"
+#Register PCPKsp
+rundll32 X:\Windows\System32\PCPKsp.dll,DllInstall
+}
+
+
+
 #Change Current Diretory so OA3Tool finds the files written in the Config File 
 &cd $PSScriptRoot
 #Delete old Files if exits
