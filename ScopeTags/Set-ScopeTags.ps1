@@ -2,7 +2,7 @@
 Set Scope Tags to all Devices
 Parameter Mode: 
 Full => Loop through all devices
-Inc => Loop through devices with Enrollment Date <= 2days and devices that have a changed Primary User in the last 24h
+Inc => Loop through devices with Enrollment Date <= 2days
 Webhook => Apply only selected device from Webhook Data (Via SN)
 #>
 
@@ -81,32 +81,6 @@ Function Get-ManagedDevicesbyEnrollmentDate() {
     }
 }
 
-Function Get-ManagedDevicesbyAuditLog() {
-    
-        $yesterday = (Get-Date -Date (Get-date).AddDays(-1) -Format yyyy-MM-dd) + "T00:00:00.000Z"
-        $uriaudit="https://graph.microsoft.com/beta/deviceManagement/auditEvents?`$filter= activityType eq 'UpdateDevicePrimaryUsers ManagedDevice' and activityDateTime gt $yesterday&?`$select=resources"
-        $AuditDevicesResponse=Invoke-RestMethod -Uri $uriaudit -Headers $authToken -Method Get
-        $AuditDevices = $AuditDevicesResponse.value.resources.resourceId
-        $AuditDevicesNextLink = $AuditDevicesResponse."@odata.nextLink"
-        while ($AuditDevicesNextLink -ne $null) {
-            $AuditDevicesResponse = (Invoke-RestMethod -Uri $AuditDevicesNextLink -Headers $authToken -Method Get)
-            $AuditDevicesNextLink = $AuditDevicesResponse."@odata.nextLink"
-            $AuditDevices += $AuditDevicesResponse.value.resources.resourceId
-        }
-
-        $Returndevices=@()
-
-        foreach($AuditDevice in $AuditDevices)
-        {
-            $uri = "https://graph.microsoft.com/beta/deviceManagement/managedDevices/$AuditDevice"
-    
-            $AuditResponse = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
-            $Returndevices+=$AuditResponse
-        }
-
-        return $Returndevices
-
-}
 
 Function Get-ManagedDevices() {
     [cmdletbinding()]
@@ -362,7 +336,6 @@ elseif($Mode -eq "Webhook")
 else
 {
     $result = Get-ManagedDevicesbyEnrollmentDate
-    $result+= Get-ManagedDevicesbyAuditLog
 }
 
 $Script:rolescopetags = Get-RoleScopeTags
