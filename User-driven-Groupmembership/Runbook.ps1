@@ -17,7 +17,7 @@ Function Add-Member(){
         $id = "@odata.id"
         $JSON = @{ $id="$DevUri" } | ConvertTo-Json -Compress
         $uri="https://graph.microsoft.com/beta/groups/$GroupID/members/`$ref"
-		{Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"}		
+		Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"	
 
 }
 
@@ -29,7 +29,7 @@ Function Remove-Member(){
     )
 
         $uri="https://graph.microsoft.com/beta/groups/$GroupID/members/$Objid/`$ref"
-		{Invoke-RestMethod -Uri $uri -Headers $authToken -Method Delete}		
+		Invoke-RestMethod -Uri $uri -Headers $authToken -Method Delete
 
 
 }
