@@ -55,11 +55,14 @@ $OSDCloudBTN.DialogResult = "Cancel"
 $OSDCloudBTN.Font = [System.Drawing.Font]::new("Microsoft Sans Serif", 18, [System.Drawing.FontStyle]::Bold)
 #Die folgende Zeile ordnet dem Click-Event die Schließen-Funktion für das Formular zu
 $OSDCloudBTN.Add_Click({
+    start-process powershell -argumentlist "$PSScriptRoot\MikeMDMOSDCloudGUI.ps1"
 
+#Disabled out the confirmation message
+<#
 $InfoForm = New-Object System.Windows.Forms.Form
 $InfoForm.Backcolor="white"
 $InfoForm.Text = "Information"
-$InfoForm.Icon="$PSScriptRoot\Icon.ico"
+#$InfoForm.Icon="$PSScriptRoot\Icon.ico"
 $InfoForm.FormBorderStyle = 'Fixed3D'
 $InfoForm.MaximizeBox = $false
 
@@ -123,8 +126,7 @@ $InfoForm.Size = New-Object System.Drawing.Size(500,200)
 
 
 [void] $InfoForm.ShowDialog()
-
-
+#>
 
 })
 
