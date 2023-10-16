@@ -64,7 +64,7 @@ foreach ($Tag in $GroupTagUIList){
 $GroupTagBTN=New-Object System.Windows.Forms.Button
 $GroupTagBTN.Location = New-Object System.Drawing.Size(10,50)
 $GroupTagBTN.Size = New-Object System.Drawing.Size(220,40)
-$GroupTagBTN.Text = "Submmit"
+$GroupTagBTN.Text = "Submit"
 $GroupTagBTN.Font = [System.Drawing.Font]::new("Microsoft Sans Serif", 14, [System.Drawing.FontStyle]::Bold)
 $GroupTagBTN.DialogResult = "Cancel"
 
