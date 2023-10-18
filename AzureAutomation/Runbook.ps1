@@ -96,7 +96,7 @@ Function Add-AutoPilotImportedDevice(){
         $json = @"
 {
     "@odata.type": "#microsoft.graph.importedWindowsAutopilotDeviceIdentity",
-    "orderIdentifier": "$orderIdentifier",
+    "groupTag": "$orderIdentifier",
     "serialNumber": "$serialNumber",
     "productKey": "",
     "hardwareIdentifier": "$hardwareIdentifier",
