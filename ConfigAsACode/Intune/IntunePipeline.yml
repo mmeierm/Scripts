@@ -27,7 +27,7 @@ steps:
    git switch main
    git checkout main
    git config pull.rebase true
-   git pull origin
+   git pull origin main
   displayName: Checkout Repo
 
 - task: AzurePowerShell@5
