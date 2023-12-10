@@ -5,6 +5,11 @@ If (!(Test-Path $ExportFolder))
 New-Item -ItemType Directory -Force -Path $ExportFolder -ErrorAction SilentlyContinue
 }
 
+If (!(Test-Path "$PSScriptRoot\GPO"))
+{
+New-Item -ItemType Directory -Force -Path "$PSScriptRoot\GPO" -ErrorAction SilentlyContinue
+}
+
 #Export Reports of all GPOs
 
 $GPOs=Get-GPO -ALL -Domain "Playgroundbul.de" #Modify to your Domainname
