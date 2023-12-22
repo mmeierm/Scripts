@@ -452,7 +452,10 @@ $DriverPacks | ForEach-Object {
 if ($DriverPack) {
     $formMainWindowControlDriverPackCombobox.Selectedindex = $formMainWindowControlDriverPackCombobox.FindString($DriverPack.Name)
 }
-
+else
+{
+	$formMainWindowControlDriverPackCombobox.Selectedindex = $formMainWindowControlDriverPackCombobox.FindString("Microsoft Update Catalog")
+}
 
 #================================================
 #   StartButton
