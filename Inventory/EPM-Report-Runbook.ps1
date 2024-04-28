@@ -158,7 +158,7 @@ Function SendIntuneData-CosmosDb
 }
 ####################################################EPM Report####################################################
 Write-Output "Export EPM Report"
-$URI = "https://graph.microsoft.com/beta/deviceManagement/privilegeManagementElevations"
+$URI = "https://graph.microsoft.com/beta/deviceManagement/privilegeManagementElevations?`$filter=((elevationType eq 'zeroTouchElevation') or (elevationType eq 'userConfirmedElevation') or (elevationType eq 'supportApprovedElevation'))"
 $Response = Invoke-WebRequest -Uri $URI -Method Get -Headers $authToken -UseBasicParsing 
 $JsonResponse = $Response.Content | ConvertFrom-Json
 $EPMData = $JsonResponse.value
@@ -166,7 +166,21 @@ If ($JsonResponse.'@odata.nextLink')
 {
     do {
         $URI = $JsonResponse.'@odata.nextLink'
-        $Response = Invoke-WebRequest -Uri $URI -Method Get -Headers $authToken -UseBasicParsing 
+        try {
+            $Response = Invoke-WebRequest -Uri $URI -Method Get -Headers $authToken -UseBasicParsing 
+        } catch {
+            $StatusCode = [int]$_.Exception.Response.StatusCode
+        
+            if ($StatusCode -eq 429) {
+                Write-Output "Request ended with Error 429 and trying again after 60s"
+                Start-Sleep -Seconds 60
+                $Response = Invoke-WebRequest -Uri $URI -Method Get -Headers $authToken -UseBasicParsing
+            } 
+             else {
+                Write-Error "Get-EPMReport, expected 200, got $([int]$StatusCode)"
+            }
+        } 
+         
         $JsonResponse = $Response.Content | ConvertFrom-Json
         $EPMData += $JsonResponse.value
     } until ($null -eq $JsonResponse.'@odata.nextLink')
