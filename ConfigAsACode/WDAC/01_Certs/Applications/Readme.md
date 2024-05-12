@@ -1,0 +1,1 @@
+Central storage for publisher certificates of released Applications

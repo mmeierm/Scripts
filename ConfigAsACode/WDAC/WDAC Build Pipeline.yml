@@ -1,0 +1,59 @@
+trigger:
+- main
+
+pool:
+  vmImage: windows-2022
+
+steps:
+
+- checkout: self
+  clean: true
+  persistCredentials: true
+
+- script: |
+   git config --global user.email PipelineUser@mikemdm.de & git config --global user.name "Pipeline"
+  workingDirectory: $(System.DefaultWorkingDirectory)
+  displayName: Git Config
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      git checkout -b main
+      git switch main
+      git checkout main
+      git config pull.rebase true
+      git pull origin main
+  displayName: Checkout Repo
+
+- task: PowerShell@2
+  inputs:
+    filePath: 'AddSignerRules.ps1'
+  displayName: Add Signer Rules
+
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: 'Config as a Code'
+    ScriptType: 'FilePath'
+    ScriptPath: 'Intune_WDAC_Upload.ps1'
+    azurePowerShellVersion: 'LatestVersion'
+  displayName: Upload new WDAC Policy into the Pilot Intune Policy
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      #Get last commit ID
+      $LASTCOMMIT=git rev-parse HEAD
+      $CommitOutput = git diff --name-only $LASTCOMMIT HEAD
+
+      #Add all Files to the Commit
+      git add -A
+
+      #Do the commit
+      $Commit = git commit -m "WDAC Policy of Commit: $CommitOutput [skip ci]"
+
+      #Push the Changes to the Repo
+      git push --set-upstream origin main
+     
+  displayName: Upload new WDAC Policy to Repo
