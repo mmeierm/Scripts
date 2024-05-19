@@ -14,7 +14,7 @@ $script:authToken = @{
 #Add the current WDAC Rule to the Policy
 $FilePath = "$PSScriptRoot\Policies\WDACPolicy.xml"
 $PolicyFile = (get-content $FilePath -Encoding UTF8 -Raw).Tostring()
-$Policy = $PolicyFile -replace '\r\n','' -replace '"','\"'
+$Policy = $PolicyFile.Replace('\', '\\') -replace '\r\n','' -replace '"','\"'
 
 #Check if Policy already exists
 
