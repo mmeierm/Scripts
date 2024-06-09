@@ -78,6 +78,7 @@ try {
 	$bodydecoded = $defaultEncoding.GetString($utf8bytes)
 
 	Invoke-RestMethod -Method $Verb -ContentType $contentType -Uri $queryUri -Headers $header -Body $bodydecoded -ErrorAction SilentlyContinue
+    [system.gc]::Collect()
    } 
    catch 
    {
@@ -87,76 +88,52 @@ try {
 	
 }
 
-Function Replace-CosmosDb
-{
-	[CmdletBinding()]
-	Param
-	(
-		[Parameter(Mandatory=$true)][String]$EndPoint,
-		[Parameter(Mandatory=$true)][String]$DataBaseId,
-		[Parameter(Mandatory=$true)][String]$CollectionId,
-		[Parameter(Mandatory=$true)][String]$MasterKey,
-		[Parameter(Mandatory=$true)][String]$JSON
-	)
-try {
-	$Verb = "PUT"
-	$ResourceType = "docs";
-    $partitionkey = "[""$(($JSON |ConvertFrom-Json).id)""]"
-    $DocID=($JSON |ConvertFrom-Json).id
-	$ResourceLink = "dbs/$DatabaseId/colls/$CollectionId/docs/$DocID"
+####################################################Get Existing Data#############################################
+$EndPoint = $CosmosDBEndPoint
+$CollectionId ="IntuneEPMContainer"
 
+$Verb = "GET"
+$ResourceType = "docs";
+$ResourceLink = "dbs/$DatabaseId/colls/$CollectionId"
+$queryUri = "$EndPoint$ResourceLink/docs"
+$dateTime = [DateTime]::UtcNow.ToString("r")
+$authHeader = Generate-MasterKeyAuthorizationSignature -verb $Verb -resourceLink $ResourceLink -resourceType $ResourceType -key $MasterKey -keyType "master" -tokenVersion "1.0" -dateTime $dateTime
+$header = @{authorization=$authHeader;"x-ms-version"="2018-12-31";"x-ms-date"=$dateTime;"x-ms-max-item-count"="1000"}
 
-	$dateTime = [DateTime]::UtcNow.ToString("r")
-	$authHeader = Generate-MasterKeyAuthorizationSignature -verb $Verb -resourceLink $ResourceLink -resourceType $ResourceType -key $MasterKey -keyType "master" -tokenVersion "1.0" -dateTime $dateTime
-	$header = @{authorization=$authHeader;"x-ms-documentdb-partitionkey"=$partitionkey;"x-ms-version"="2018-12-31";"x-ms-date"=$dateTime}
-	$contentType= "application/json"
-	$queryUri = "$EndPoint$ResourceLink/"
-
-	#Convert to UTF8 for special characters
-	$defaultEncoding = [System.Text.Encoding]::GetEncoding('ISO-8859-1')
-	$utf8Bytes = [System.Text.Encoding]::UTf8.GetBytes($JSON)
-	$bodydecoded = $defaultEncoding.GetString($utf8bytes)
-
-	Invoke-RestMethod -Method $Verb -ContentType $contentType -Uri $queryUri -Headers $header -Body $bodydecoded -ErrorAction SilentlyContinue
-    } 
-   catch 
-   {
-    return $_.Exception.Response.StatusCode.value__ 
-   }
-    
 	
-}
 
-Function SendIntuneData-CosmosDb
-{
-	[CmdletBinding()]
-	Param
-	(
-		[Parameter(Mandatory=$true)][String]$EndPoint,
-		[Parameter(Mandatory=$true)][String]$DataBaseId,
-		[Parameter(Mandatory=$true)][String]$CollectionId,
-		[Parameter(Mandatory=$true)][String]$MasterKey,
-		[Parameter(Mandatory=$true)][String]$JSON
-	)
+	
+$Response=Invoke-WebRequest -Method $Verb -Uri $queryUri -Headers $header -ErrorAction SilentlyContinue -UseBasicParsing
+$JsonResponse = $Response.Content | ConvertFrom-Json
+$EPMEvents += $JsonResponse.Documents.id
+$NextToken = $Response.Headers.'x-ms-continuation'
 
     
-    $DeviceResult=Replace-CosmosDb -EndPoint $EndPoint -DataBaseId $DataBaseId -CollectionId $CollectionId -MasterKey $MasterKey -JSON $JSON
-        If ($DeviceResult -eq "404")
-            {
-            $DeviceResult=Post-CosmosDb -EndPoint $EndPoint -DataBaseId $DataBaseId -CollectionId $CollectionId -MasterKey $MasterKey -JSON $JSON
-            If ($DeviceResult -eq "429")
-                {
-                    Start-Sleep 1
-                    $DeviceResult=Post-CosmosDb -EndPoint $EndPoint -DataBaseId $DataBaseId -CollectionId $CollectionId -MasterKey $MasterKey -JSON $JSON
-                }
-            }
-        elseif ($DeviceResult -eq "429")
-            {
-                Start-Sleep 1
-                $DeviceResult=Replace-CosmosDb -EndPoint $EndPoint -DataBaseId $DataBaseId -CollectionId $CollectionId -MasterKey $MasterKey -JSON $JSON
-            }
+while ($NextToken)
+{
+    $header = @{authorization=$authHeader;"x-ms-version"="2018-12-31";"x-ms-date"=$dateTime;"x-ms-max-item-count"="1000";"x-ms-continuation"=$NextToken}
+
+    $Response=Invoke-WebRequest -Method $Verb -Uri $queryUri -Headers $header -ErrorAction SilentlyContinue -UseBasicParsing
+    $JsonResponse = $Response.Content | ConvertFrom-Json
+    $EPMEvents += $JsonResponse.Documents.id
+    $NextToken = $Response.Headers.'x-ms-continuation'
 }
+Write-Output "CosmosDB Currently found entries:"
+Write-Output $EPMEvents.Count
+[system.gc]::Collect()
+
+# prepare Hashtable 
+$OptimizeEPMEvents = @{}
+foreach ($_ in $EPMEvents) {
+    $OptimizeEPMEvents.Add($_,$_)
+}
+# End of Hashtable
+
+$EPMEvents = $null
+[system.gc]::Collect()
+
 ####################################################EPM Report####################################################
+
 Write-Output "Export EPM Report"
 $URI = "https://graph.microsoft.com/beta/deviceManagement/privilegeManagementElevations?`$filter=((elevationType eq 'zeroTouchElevation') or (elevationType eq 'userConfirmedElevation') or (elevationType eq 'supportApprovedElevation'))"
 $Response = Invoke-WebRequest -Uri $URI -Method Get -Headers $authToken -UseBasicParsing 
@@ -185,14 +162,17 @@ If ($JsonResponse.'@odata.nextLink')
         $EPMData += $JsonResponse.value
     } until ($null -eq $JsonResponse.'@odata.nextLink')
 }
-
+Write-Output "Graph API Currently found entries:"
+Write-Output $EPMData.Count
 
 foreach ($EPM in $EPMData)
 {
-$EPM = $EPM | ConvertTo-Json
-$DeviceResult=SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEPMContainer" -MasterKey $MasterKey -JSON $EPM
+    $ID=$EPM.id
+    $EPM = $EPM | ConvertTo-Json
+    If (!($OptimizeEPMEvents[$ID]))
+        {
+            $Result = Post-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEPMContainer" -MasterKey $MasterKey -JSON $EPM
+            [system.gc]::Collect()
+        }
+
 } 
-
-$EPMData =""
-
-[system.gc]::Collect()
