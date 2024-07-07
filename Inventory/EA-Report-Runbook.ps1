@@ -194,7 +194,7 @@ foreach ($EA in $EAData)
     $EA.id = $EA.deviceId
     $EA = $EA | ConvertTo-Json
 
-    $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEAResourceperformanceContainer" -MasterKey $MasterKey -JSON $EA
+    $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEAResourcePerformanceContainer" -MasterKey $MasterKey -JSON $EA
     [system.gc]::Collect()
 
 } 
