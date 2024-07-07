@@ -191,10 +191,11 @@ Write-Output "Graph API Currently found entries: $($EAData.Count)"
 
 foreach ($EA in $EAData)
 {
+    $EA.id = $EA.deviceId
     $EA = $EA | ConvertTo-Json
 
-            $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEAResourceperformanceContainer" -MasterKey $MasterKey -JSON $EA
-            [system.gc]::Collect()
+    $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEAResourceperformanceContainer" -MasterKey $MasterKey -JSON $EA
+    [system.gc]::Collect()
 
 } 
 
@@ -237,10 +238,11 @@ Write-Output "Graph API Currently found entries: $($EAData.Count)"
 
 foreach ($EA in $EAData)
 {
+    $EA.id = $EA.deviceId
     $EA = $EA | ConvertTo-Json
 
-            $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEARemotingPerformanceContainer" -MasterKey $MasterKey -JSON $EA
-            [system.gc]::Collect()
+    $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEARemotingPerformanceContainer" -MasterKey $MasterKey -JSON $EA
+    [system.gc]::Collect()
 
 } 
 
@@ -273,7 +275,7 @@ If ($JsonResponse.'@odata.nextLink')
              else {
                 Write-Error "Get-EPMReport, expected 200, got $([int]$StatusCode)"
             }
-        } 
+        }   
          
         $JsonResponse = $Response.Content | ConvertFrom-Json
         $EAData += $JsonResponse.value
@@ -283,10 +285,11 @@ Write-Output "Graph API Currently found entries: $($EAData.Count)"
 
 foreach ($EA in $EAData)
 {
+    $EA.id = $EA.deviceId
     $EA = $EA | ConvertTo-Json
 
-            $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEABatteryHealthContainer" -MasterKey $MasterKey -JSON $EA
-            [system.gc]::Collect()
+    $Result = SendIntuneData-CosmosDb -EndPoint $CosmosDBEndPoint -DataBaseId $DataBaseId -CollectionId "IntuneEABatteryHealthContainer" -MasterKey $MasterKey -JSON $EA
+    [system.gc]::Collect()
 
 } 
 
