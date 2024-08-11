@@ -34,6 +34,7 @@ Function Add-Member(){
 		Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"	
 }
 
+
 Function Get-Members(){
     [cmdletbinding()]
     param
@@ -42,8 +43,17 @@ Function Get-Members(){
     )
 
         $uri="https://graph.microsoft.com/beta/groups/$GroupID/members?`$select=id,deviceId"
-		$members=Invoke-RestMethod -Uri $uri -Headers $authToken -Method GET -ContentType "application/json"	
-        return $members.value
+		$Response=Invoke-RestMethod -Uri $uri -Headers $authToken -Method GET -UseBasicParsing
+        $Groupmembers = $Response.value
+        If ($Response.'@odata.nextLink')
+        {
+            do {
+                $URI = $Response.'@odata.nextLink'
+                $Response = Invoke-RestMethod -Uri $URI -Method Get -Headers $authToken -UseBasicParsing 
+                $Groupmembers += $Response.value
+            } until ($null -eq $Response.'@odata.nextLink')
+        }
+        return $Groupmembers
 }
 
 Function Remove-Member(){
