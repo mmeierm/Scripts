@@ -1,0 +1,42 @@
+{
+"Rules":[ 
+    { 
+       "SettingName":"VPNInstalled",
+       "Operator":"IsEquals",
+       "DataType":"Boolean",
+       "Operand":true,
+       "MoreInfoUrl":"https://mikemdm.de",
+       "RemediationStrings":[ 
+          { 
+             "Language":"en_US",
+             "Title":"Wiregurad VPN must be installed",
+             "Description": "Wireguard VPN is requried to be installed, check installation status in Company Portal or check the link above"
+          },
+          {
+             "Language":"de_DE",
+             "Title":"Wireguard VPN muss installiert sein",
+             "Description": "Bitte stellen Sie sicher, dass Wireguard VPN installiert ist. Prüfen Sie den Installationsstatus im Unternehmens Portal oder erfahren Sie mehr über den obigen Link "
+          }
+       ]
+    },
+    { 
+       "SettingName":"NonApprovedApp",
+       "Operator":"IsEquals",
+       "DataType":"Boolean",
+       "Operand":false,
+       "MoreInfoUrl":"https://mikemdm.de",
+       "RemediationStrings":[ 
+          {
+             "Language": "en_US",
+             "Title": "Non Approved App found",
+             "Description": "Non Approved App found, please uninstall the unapproved App immediately. For more Information please refer to the link above"
+          },
+          {
+             "Language": "de_DE",
+             "Title": "Nicht freigegebene Software gefunden",
+             "Description": "Nicht freigegebene Software gefunden. Bitte deinstallieren Sie die nicht freigegebene Appliaktion unverzüglich. Für mehr Informationnen, beziehen Sie sich auf den obigen Link"
+          }
+       ]
+    }
+ ]
+}
