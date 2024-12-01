@@ -1,0 +1,46 @@
+trigger:
+- main
+
+schedules:
+- cron: "0 */1 * * *"
+  displayName: every one hour trigger
+  always: true
+  branches:
+    include:
+    - main
+
+pool:
+  vmImage: windows-2022
+
+steps:
+
+- checkout: self
+  clean: true
+  persistCredentials: true
+
+- script: |
+   git config --global user.email pipeline@mikemdm.com & git config --global user.name "Pipeline"
+  workingDirectory: $(System.DefaultWorkingDirectory)
+  displayName: Git Config
+
+- script: |
+   git checkout -b main
+   git switch main
+   git checkout main
+   git config pull.rebase true
+   git pull origin main
+  displayName: Checkout Repo
+
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: 'Config as a Code'
+    ScriptType: 'FilePath'
+    ScriptPath: 'IntuneExport.ps1'
+    azurePowerShellVersion: 'LatestVersion'
+
+- script: |
+   git add -A
+   git commit -m "Changes between last update and now [skip ci]"
+   git push --set-upstream origin main
+  displayName: Upload Changes to Repo
+  workingDirectory: $(System.DefaultWorkingDirectory)
