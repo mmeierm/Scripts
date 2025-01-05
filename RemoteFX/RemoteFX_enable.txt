@@ -1,0 +1,5 @@
+; Allow RDP redirection of other supported RemoteFX USB devices from this computer
+Computer
+Software\Policies\Microsoft\Windows NT\Terminal Services\Client
+fUsbRedirectionEnableMode
+DWORD:2
