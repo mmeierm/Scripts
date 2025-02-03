@@ -25,5 +25,9 @@ else
 # Set registry key for BootFlags
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\TsUsbFlt" -Name "BootFlags" -Value 4 -Type DWord
 
+If(!(Test-Path -Path "HKLM:\System\CurrentControlSet\Services\usbhub\hubg"))
+{
+New-Item -Path "HKLM:\System\CurrentControlSet\Services\usbhub\hubg" -ErrorAction stop
+}
 # Set registry key for EnableDiagnosticMode
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\usbhub\hubg" -Name "EnableDiagnosticMode" -Value 0x80000000 -Type DWord
