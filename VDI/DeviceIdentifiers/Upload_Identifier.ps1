@@ -1,6 +1,10 @@
 #Parameters
+
 #Webhook URL
-$uri= "<INSERT WEBHOOK URI HERE>"
+$uri= "https://4013c855-7377-4c74-b70e-c8cf5c657389.webhook.dewc.azure-automation.net/webhooks?token=g0I118rkmamQiSwkcP5oivkEBGLR%2bG94ikNOB3jS3Vs%3d"
+
+#Taskname
+$Taskname = "MikeMDM-CorpIdent"
 
 #Detect if we are in OOBE
 $oobe = Get-process wwahost -ErrorAction SilentlyContinue
@@ -27,7 +31,19 @@ IF (($Username -Notlike "*DefaultUser*") -and ($($oobe.name) -eq "wwahost"))
     #Upload Identifier
 
     $Response = Invoke-WebRequest -Uri $uri -Body $body -Method Post -UseBasicParsing
-
+    $JobId = ($Response.Content | ConvertFrom-Json).JobIds
+    If ($JobId)
+    {
+        #Disable Task
+        Get-ScheduledTask $Taskname | Disable-ScheduledTask
+        exit 0
+    }
+    else {
+        Write-Output "Upload failed"
+        Start-Sleep 30
+        Get-ScheduledTask $Taskname | Start-ScheduledTask
+        exit 1
+    }
 }
 
 else {
