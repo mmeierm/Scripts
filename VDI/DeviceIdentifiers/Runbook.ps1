@@ -42,7 +42,7 @@ if ($WebhookData)
 "@
 
     
-    Invoke-WebRequest -Uri "https://graph.microsoft.com/beta/deviceManagement/importedDeviceIdentities/importDeviceIdentityList" -Body $body -Method Post -UseBasicParsing               
+    Invoke-WebRequest -Uri "https://graph.microsoft.com/beta/deviceManagement/importedDeviceIdentities/importDeviceIdentityList" -Body $body -Method Post -headers $authToken -UseBasicParsing               
 		}
 
 }
