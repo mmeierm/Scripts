@@ -1,7 +1,7 @@
 #Parameters
 
 #Webhook URL
-$uri= "https://4013c855-7377-4c74-b70e-c8cf5c657389.webhook.dewc.azure-automation.net/webhooks?token=g0I118rkmamQiSwkcP5oivkEBGLR%2bG94ikNOB3jS3Vs%3d"
+$uri= "<INSERT WEBHOOK URL HERE>
 
 #Taskname
 $Taskname = "MikeMDM-CorpIdent"
