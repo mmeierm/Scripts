@@ -1,5 +1,5 @@
     # Connect to Intune
-    $Token = (Get-AzAccessToken -TenantId "<INSERT Tenand ID HERE>" -ResourceUrl "https://graph.microsoft.com").Token
+    $Token= [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-AzAccessToken -TenantId "<INSERT Tenand ID HERE>" -ResourceUrl "https://graph.microsoft.com" -AsSecureString).Token))
     Connect-MgGraph -AccessToken $Token
 
     
