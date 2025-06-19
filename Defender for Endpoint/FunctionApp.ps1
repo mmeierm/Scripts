@@ -3,14 +3,14 @@ param($Timer)
 
 ####################################Token Section##############################################
 Write-Output "Connect to Intune and AAD"
-$Token= (Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com").Token
+$Token= [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -AsSecureString).Token))
 $script:authToken = @{
     'Content-Type'  = 'application/json'
     'Authorization' = "Bearer " + $Token
 }
 
 Write-Output "Connect to MDE"
-$TokenMDE = (Get-AzAccessToken -ResourceUrl "https://api.securitycenter.microsoft.com").Token
+$Token= [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-AzAccessToken -ResourceUrl "https://api.securitycenter.microsoft.com" -AsSecureString).Token))
 $script:authTokenMDE= @{
     'Content-Type'  = 'application/json'
     'Authorization' = "Bearer " + $TokenMDE
