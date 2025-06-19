@@ -4,7 +4,7 @@ $PolicyName = 'Pilot App Control for Business Policy'
 
 
 # Connect to Intune
-$Token= (Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com").Token
+$Token= [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -AsSecureString).Token))
         
 $script:authToken = @{
     'Content-Type'  = 'application/json'
