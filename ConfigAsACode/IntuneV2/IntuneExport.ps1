@@ -1,5 +1,5 @@
     # Connect to Intune
-    $Token = (Get-AzAccessToken -TenantId "<INSERT Tenand ID HERE>" -ResourceUrl "https://graph.microsoft.com").Token | ConvertTo-SecureString -AsPlainText -Force
+    $Token = (Get-AzAccessToken -TenantId "<INSERT Tenand ID HERE>" -ResourceUrl "https://graph.microsoft.com").Token
     Connect-MgGraph -AccessToken $Token
 
     
