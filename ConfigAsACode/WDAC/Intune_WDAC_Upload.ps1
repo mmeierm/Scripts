@@ -4,7 +4,7 @@ $ID="458e031a-b672-4cd4-acb4-a86f8ad4fb01"
 
 
 # Connect to Intune
-$Token= (Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com").Token
+$Token= [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com" -AsSecureString).Token))
         
 $script:authToken = @{
     'Content-Type'  = 'application/json'
