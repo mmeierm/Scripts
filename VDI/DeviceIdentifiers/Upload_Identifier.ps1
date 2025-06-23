@@ -7,10 +7,9 @@ $uri= "<INSERT WEBHOOK URL HERE>"
 $Taskname = "MikeMDM-CorpIdent"
 
 #Detect if we are in OOBE
-$oobe = Get-process wwahost -ErrorAction SilentlyContinue
-$Username = $env:UserName
+$Username = Get-WMIObject -class Win32_ComputerSystem | select username
 
-IF (($Username -Notlike "*DefaultUser*") -and ($($oobe.name) -eq "wwahost"))
+IF ($Username -match "DefaultUser")
 {
     #We are in OBBE, get Device Information for the Corporate Identifier
     $Computersytem = Get-WmiObject -Class win32_computersystem
@@ -21,8 +20,8 @@ IF (($Username -Notlike "*DefaultUser*") -and ($($oobe.name) -eq "wwahost"))
     #Create Request Body
     $bodyTable = @{
 
-            'Manufactuer' = $Manufactuer
-            'Model' = $Model
+            'Manufactuer' = $Manufactuer -replace ',',''
+            'Model' = $Model -replace ',',''
             'Serial' = $Serial
       }
       
