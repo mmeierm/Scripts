@@ -169,7 +169,7 @@ Function SendIntuneData-CosmosDb
 $Windows="https://graph.microsoft.com/beta/deviceManagement/managedDevices?`$filter=(((deviceType eq 'desktop') or (deviceType eq 'windowsRT') or (deviceType eq 'winEmbedded') or (deviceType eq 'surfaceHub') or (deviceType eq 'desktop') or (deviceType eq 'windowsRT') or (deviceType eq 'winEmbedded') or (deviceType eq 'surfaceHub') or (deviceType eq 'windowsPhone') or (deviceType eq 'holoLens')))&`$count=true"
 $Apple="https://graph.microsoft.com/beta/deviceManagement/managedDevices?`$filter=(((deviceType eq 'iPad') or (deviceType eq 'iPhone') or (deviceType eq 'iPod')))&`$count=true"
 $MacOS="https://graph.microsoft.com/beta/deviceManagement/managedDevices?`$filter=(deviceType eq 'macMDM')&`$count=true"
-$Android="https://graph.microsoft.com/beta/deviceManagement/managedDevices?`$filter=((((deviceType eq 'android') or (deviceType eq 'androidForWork') or (deviceType eq 'androidnGMS')) or ((deviceType eq 'androidEnterprise') and ((deviceEnrollmentType eq 'androidEnterpriseDedicatedDevice') or (deviceEnrollmentType eq 'androidEnterpriseFullyManaged') or (deviceEnrollmentType eq 'androidEnterpriseCorporateWorkProfile')))))&`$count=true"
+$Android="https://graph.microsoft.com/beta/deviceManagement/managedDevices?`$filter=(deviceType eq 'android') or (deviceType eq 'androidForWork') or (deviceType eq 'androidnGMS') or (deviceType eq 'androidEnterprise') or (deviceType eq 'androidnGMS')&`$count=true"
 $timestamp = Get-Date -Format o
 $Response = Invoke-WebRequest -Uri $Windows -Method Get -Headers $authToken -UseBasicParsing 
 $JsonResponse = $Response.Content | ConvertFrom-Json
