@@ -29,7 +29,7 @@ function Get-NetworkAdaptersWithGUID {
             $netConnectionStatus = $adapter.NetConnectionStatus
             
             # Get connection status description
-            $statusDescription = if (-not $isEnabled -or $adapter.ConfigManagerErrorCode -eq 22) {
+            $statusDescription = if ($adapter.ConfigManagerErrorCode -eq 22) {
                 "Disabled"
             } elseif ($netConnectionStatus -eq $null) {
                 "Unknown"
