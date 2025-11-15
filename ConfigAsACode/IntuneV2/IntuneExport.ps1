@@ -208,7 +208,7 @@
         }
 
         foreach ($configurationPolicy in $configurationPolicies) {
-            $BackupResponse = (Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$($configurationPolicy.id)/settings" -Method Get)
+            $BackupResponse = (Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$($configurationPolicy.id)/assignments" -Method Get)
             $assignments = $BackupResponse.value
             $NextLink = $BackupResponse."@odata.nextLink"
                 while ($null -ne $NextLink){
