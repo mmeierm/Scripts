@@ -1,0 +1,38 @@
+{
+    "VM1": 
+    {
+        "Expiry": "2000-01-01T12:00:00Z",
+        "Download" : "-",
+        "ReplacedBy": "VM2",
+        "Notes": "",
+        "Alert": "false",
+        "AlertMessage": ""
+    },
+    "VM2":
+    {
+        "Expiry": "2026-12-30T12:00:00Z",
+        "Download" : "companyportal:ApplicationId=5847e831-f7e4-4641-8d6b-da8dd7b3ee0a",
+        "ReplacedBy": "-",
+        "Notes": "N/A",
+        "Alert": "false",
+        "AlertMessage": ""
+    },
+    "Win11-1":
+    {
+        "Expiry": "2026-06-30T12:00:00Z",
+        "Download" : "-",
+        "ReplacedBy": "Win11-2",
+        "Notes": "N/A",
+        "Alert": "false",
+        "AlertMessage": ""
+    },
+    "Win11-2":
+    {
+        "Expiry": "2026-12-30T12:00:00Z",
+        "Download" : "companyportal:ApplicationId=40c8c6dd-93a7-4914-9bce-f00efb5971e5",
+        "ReplacedBy": "-",
+        "Notes": "N/A",
+        "Alert": "false",
+        "AlertMessage": ""
+    }
+}
