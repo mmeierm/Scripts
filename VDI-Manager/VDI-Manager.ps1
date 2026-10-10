@@ -85,6 +85,13 @@ foreach ($User in $Users)
                 
                 $j = $id[$i]
 
+                If (($Inventorycontent | Where-Object {$_ -like "vmlist$j.config*"}) -NotMatch ".vmx")
+                {
+                #Not a vm but a Folder, skip entry
+                }
+                else
+                {
+
                 $VMName = $Inventorycontent | Where-Object {$_ -like "vmlist$j.displayName*"}
                 $VMName = $VMName -split ' = ',2
                 $VMName = $VMName[1]
@@ -113,6 +120,7 @@ foreach ($User in $Users)
 				    $tempvmini | Add-Member -MemberType NoteProperty -Name "LastBootTimeUTC" -Value $null -Force
                     $VMiniArray += $tempvmini
                     }
+				}
             }
         }
     }
